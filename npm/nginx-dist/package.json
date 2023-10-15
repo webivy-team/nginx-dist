@@ -1,0 +1,21 @@
+{
+  "repository": "https://github.com/webivy-team/nginx-dist",
+  "name": "nginx-dist",
+  "version": "v1.25.2-3",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "release": "npm run darwin-x64 && npm run darwin-arm64 && npm run linux-arm64 && npm run linux-x64 && npm update && npm publish",
+    "darwin-x64": "version=$(cat ./package.json | jq -r '.version') && jq '.optionalDependencies[\"nginx-dist-darwin-x64\"] = \"'$version'\"' package.json > package.json.tmp && mv package.json.tmp package.json && cd ../darwin-x64 && npm run pre-release && npm publish",
+    "darwin-arm64": "version=$(cat ./package.json | jq -r '.version') && jq '.optionalDependencies[\"nginx-dist-darwin-arm64\"] = \"'$version'\"' package.json > package.json.tmp && mv package.json.tmp package.json && cd ../darwin-arm64 && npm run pre-release && npm publish",
+    "linux-arm64": "version=$(cat ./package.json | jq -r '.version') && jq '.optionalDependencies[\"nginx-dist-linux-arm64\"] = \"'$version'\"' package.json > package.json.tmp && mv package.json.tmp package.json && cd ../linux-arm64 && npm run pre-release && npm publish",
+    "linux-x64": "version=$(cat ./package.json | jq -r '.version') && jq '.optionalDependencies[\"nginx-dist-linux-x64\"] = \"'$version'\"' package.json > package.json.tmp && mv package.json.tmp package.json && cd ../linux-x64 && npm run pre-release && npm publish"
+  },
+  "optionalDependencies": {
+    "nginx-dist-darwin-x64": "v1.25.2-3",
+    "nginx-dist-darwin-arm64": "v1.25.2-3",
+    "nginx-dist-linux-arm64": "v1.25.2-3",
+    "nginx-dist-linux-x64": "v1.25.2-3"
+  }
+}

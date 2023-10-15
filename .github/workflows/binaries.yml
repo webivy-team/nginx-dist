@@ -1,0 +1,235 @@
+name: binaries
+on:
+  push:
+    branches:
+      - 'master'
+      - 'main'
+    paths:
+      - .github/workflows/binaries.yml
+      - scripts/*
+
+permissions: write-all
+
+env:
+  LIBRESSL_VERSION: "3.7.3"
+  ALPINE_BRANCH: v3.18
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  JOBS: 3
+  CFLAGS: -Os -fomit-frame-pointer -pipe
+  LINUX_LDFLAGS: -static -Wl,--as-needed -Wl,-Map,linker.map
+  DARWIN_LDFLAGS: -Wl,-map,linker.map
+  NGINX_MODULES: >-
+    openresty/echo-nginx-module
+    openresty/headers-more-nginx-module
+  SKIP_SAME_SOURCES: true
+
+jobs:
+  nginx-multi-linux:
+    name: nginx-${{ matrix.NGINX_VERSION }}-${{ matrix.ARCH }}-linux
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        NGINX_VERSION:
+          - 1.25.2
+        ARCH:
+          - x86_64
+          - aarch64
+        include:
+          - NJS_VERSION: 0.x.x
+    steps:
+      - name: Checkout master branch
+        uses: actions/checkout@v3
+        with:
+          path: master
+
+      - name: Download and extract nginx
+        run: ./master/scripts/fetch-sources -d . nginx/nginx@release-${{ matrix.NGINX_VERSION }}
+
+      - name: Download and extract nginx modules
+        run: ./master/scripts/fetch-sources nginx/njs@${{ matrix.NJS_VERSION }} $NGINX_MODULES
+
+      - name: Install Alpine ${{ env.ALPINE_BRANCH }} for ${{ matrix.ARCH }}
+        uses: jirutka/setup-alpine@v1
+        with:
+          arch: ${{ matrix.ARCH }}
+          branch: ${{ env.ALPINE_BRANCH }}
+          packages: >
+            build-base
+            jansson-dev
+            jansson-static
+            linux-headers
+            libressl-dev
+            pcre2-dev
+            zlib-dev
+            zlib-static
+            curl
+
+      - name: Build nginx
+        env:
+          NGINX_MODULES: nginx/njs ${{ env.NGINX_MODULES }}
+          CFLAGS: ${{ env.CFLAGS }}
+          LDFLAGS: ${{ env.LINUX_LDFLAGS }}
+        run: ./master/scripts/build-nginx
+        shell: alpine.sh {0}
+
+      - name: Upload nginx binary to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: artifact/*
+
+  # TODO: Borked
+  # nginx-x86_64-darwin:
+  #   name: nginx-${{ matrix.NGINX_VERSION }}-x86_64-darwin
+  #   runs-on: macos-latest
+  #   strategy:
+  #     matrix:
+  #       NGINX_VERSION:
+  #         - 1.25.2
+  #       include:
+  #         - NJS_VERSION: 0.x.x
+  #   steps:
+  #     - name: Install dependencies
+  #       run: brew install gsed jansson jq libressl pcre2 zlib
+
+  #     - name: Checkout master branch
+  #       uses: actions/checkout@v3
+  #       with:
+  #         path: master
+
+  #     - name: Download and extract nginx
+  #       run: ./master/scripts/fetch-sources -d . nginx/nginx@release-${{ matrix.NGINX_VERSION }}
+
+  #     - name: Download and extract nginx modules
+  #       run: ./master/scripts/fetch-sources nginx/njs@${{ matrix.NJS_VERSION }} $NGINX_MODULES
+
+  #     # cmake prefers dynamic libs and there's no option to change it, so
+  #     # we have to remove them to give it no other option than using static.
+  #     - name: Remove dylibs
+  #       run: |
+  #         rm /usr/local/opt/jansson/lib/*.dylib
+  #         rm /usr/local/opt/openssl/lib/*.dylib
+  #         rm /usr/local/opt/pcre2/lib/*.dylib
+  #         rm /usr/local/opt/zlib/lib/*.dylib
+
+  #     - name: Build nginx
+  #       env:
+  #         NGINX_MODULES: nginx/njs ${{ env.NGINX_MODULES }}
+  #         CFLAGS: ${{ env.CFLAGS }} -I/usr/local/opt/openssl/include -I/usr/local/opt/pcre2/include -I/usr/local/opt/zlib/include
+  #         LDFLAGS: ${{ env.DARWIN_LDFLAGS }} -L/usr/local/opt/openssl/lib -L/usr/local/opt/pcre2/lib -L/usr/local/opt/zlib/lib
+  #       run: ./master/scripts/build-nginx
+
+  #     - name: Upload nginx binary to artifacts
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         path: artifact/*
+
+  nginx-aarch64-darwin:
+    name: nginx-${{ matrix.NGINX_VERSION }}-aarch64-darwin
+    runs-on: macos-latest-xlarge
+    strategy:
+      matrix:
+        NGINX_VERSION:
+          - 1.25.2
+        include:
+          - NJS_VERSION: 0.x.x
+    steps:
+      - name: Install dependencies
+        run: brew install gsed jansson jq libressl pcre2 zlib
+
+      - name: Checkout master branch
+        uses: actions/checkout@v3
+        with:
+          path: master
+
+      - name: Download and extract nginx
+        run: ./master/scripts/fetch-sources -d . nginx/nginx@release-${{ matrix.NGINX_VERSION }}
+
+      - name: Download and extract nginx modules
+        run: ./master/scripts/fetch-sources nginx/njs@${{ matrix.NJS_VERSION }} $NGINX_MODULES
+
+      # cmake prefers dynamic libs and there's no option to change it, so
+      # we have to remove them to give it no other option than using static.
+      - name: Remove dylibs
+        run: |
+          rm /usr/local/opt/jansson/lib/*.dylib || true
+          rm /usr/local/opt/openssl/lib/*.dylib || true
+          rm /usr/local/opt/pcre2/lib/*.dylib || true
+          rm /usr/local/opt/zlib/lib/*.dylib || true
+
+      - name: Build nginx
+        env:
+          NGINX_MODULES: nginx/njs ${{ env.NGINX_MODULES }}
+          CFLAGS: ${{ env.CFLAGS }} -I/usr/local/opt/openssl/include -I/usr/local/opt/pcre2/include -I/usr/local/opt/zlib/include
+          LDFLAGS: ${{ env.DARWIN_LDFLAGS }} -L/usr/local/opt/openssl/lib -L/usr/local/opt/pcre2/lib -L/usr/local/opt/zlib/lib
+        run: ./master/scripts/build-nginx
+
+      - name: Upload nginx binary to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: artifact/*
+
+  upload:
+    name: Upload binaries
+    needs:
+      - nginx-multi-linux
+      # - nginx-x86_64-darwin
+      - nginx-aarch64-darwin
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    container:
+      image: docker://alpine:3.18
+    steps:
+      - name: Install dependencies
+        run: apk add -U git nodejs tree
+
+      - name: Checkout master branch
+        uses: actions/checkout@v3
+        with:
+          path: master
+
+      - name: Download and unpack all workflow run artifacts
+        uses: actions/download-artifact@v3
+
+      - name: List unpacked artifact files
+        run: ls -lah artifact/
+
+      - name: Move binaries
+        if: env.SKIP_SAME_SOURCES == 'true'
+        working-directory: master
+
+        run: |
+          mv ../artifact/nginx-*-x86_64-linux ./npm/linux-x64/nginx
+          mv ../artifact/nginx-*-x86_64-linux.sources ./npm/linux-x64/nginx.sources
+          mv ../artifact/nginx-*-aarch64-linux ./npm/linux-arm64/nginx
+          mv ../artifact/nginx-*-aarch64-linux.sources ./npm/linux-arm64/nginx.sources
+          # mv ../artifact/nginx-*-x86_64-darwin ./npm/darwin-x64/nginx
+          # mv ../artifact/nginx-*-x86_64-darwin.sources ./npm/darwin-x64/nginx.sources
+          mv ../artifact/nginx-*-arm64-darwin ./npm/darwin-arm64/nginx
+          mv ../artifact/nginx-*-arm64-darwin.sources ./npm/darwin-arm64/nginx.sources
+          chmod +x ./npm/*/nginx
+
+      - name: Check if there are any changes
+        id: has_changes
+        working-directory: master
+        run: |
+          git status || exit 1
+          test -n "$(git status --porcelain)" && result=yes || result=no
+          echo "result=$result" >> $GITHUB_OUTPUT
+
+      - name: Commit changes
+        if: steps.has_changes.outputs.result == 'yes'
+        working-directory: master
+        run: |
+          git config --local user.email "github-actions@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add --all
+          git commit -m "Autobuild: Built from ${{ github.sha }}"
+
+      - name: Push changes back to origin
+        if: steps.has_changes.outputs.result == 'yes'
+        working-directory: master
+        run: |
+          # XXX: workaround for https://github.com/orgs/community/discussions/55820
+          git config --global http.version HTTP/1.1
+          git pull -r
+          git push https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git master

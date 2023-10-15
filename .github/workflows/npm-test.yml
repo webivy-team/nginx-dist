@@ -1,0 +1,28 @@
+name: Test
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+        matrix:
+            os: [ubuntu-latest, macos-latest, macos-latest-xlarge]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Run NPM Pack
+        working-directory: ./npm/nginx-dist
+        shell: bash
+        run: |
+          echo 'arch' $(uname -m)
+          echo 'os' $(uname -s)
+          npm pack
+      - name: Run NPM Test
+        working-directory: ./tests
+        shell: bash
+        run: |
+          npm i ../npm/nginx-dist/*.tgz && npm test
