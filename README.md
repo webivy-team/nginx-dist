@@ -44,3 +44,7 @@ sudo setcap 'cap_net_bind_service=+ep' ./node_modules/nginx-dist-*/nginx
 ```
 
 Even then you should keep a health check route at http://127.0.0.1:8080/health_check since that is used to check when nginx is alive by this wrapper.
+
+## TODO
+
+- [ ] Do health check over a unix socket
