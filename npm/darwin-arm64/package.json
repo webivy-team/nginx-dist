@@ -12,5 +12,5 @@
     "arm64"
   ],
   "bin": "nginx",
-  "version": "v1.25.2-3"
+  "version": "v1.25.2-5"
 }

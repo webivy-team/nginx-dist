@@ -1,7 +1,7 @@
 {
   "repository": "https://github.com/webivy-team/nginx-dist",
   "name": "nginx-dist",
-  "version": "v1.25.2-3",
+  "version": "v1.25.2-5",
   "type": "module",
   "main": "index.js",
   "license": "MIT",
@@ -13,9 +13,9 @@
     "linux-x64": "version=$(cat ./package.json | jq -r '.version') && jq '.optionalDependencies[\"nginx-dist-linux-x64\"] = \"'$version'\"' package.json > package.json.tmp && mv package.json.tmp package.json && cd ../linux-x64 && npm run pre-release && npm publish"
   },
   "optionalDependencies": {
-    "nginx-dist-darwin-x64": "v1.25.2-3",
-    "nginx-dist-darwin-arm64": "v1.25.2-3",
-    "nginx-dist-linux-arm64": "v1.25.2-3",
-    "nginx-dist-linux-x64": "v1.25.2-3"
+    "nginx-dist-darwin-x64": "v1.25.2-5",
+    "nginx-dist-darwin-arm64": "v1.25.2-5",
+    "nginx-dist-linux-arm64": "v1.25.2-5",
+    "nginx-dist-linux-x64": "v1.25.2-5"
   }
 }

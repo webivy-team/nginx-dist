@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import { dirname, resolve } from "node:path";
+import { request } from 'http'
 
 import { fileURLToPath } from "node:url";
 
@@ -36,18 +37,18 @@ export default async () => {
 
     let backoff = 50;
     async function checkIfNginxRunning() {
-      const result = await fetch(`http://127.0.0.1:8080/health_check`)
-        .then((res) => res.status < 499)
-        .catch(
-          () => null,
-        );
-      if (result) {
-        clearTimeout(processCloseTimeout);
-        resolve();
-      } else {
-        setTimeout(checkIfNginxRunning, backoff);
-        backoff = Math.min(backoff + 50, 250);
-      }
+      request({
+        socketPath: './nginx.sock',
+        path: '/',
+      }, ({ statusCode }) => {
+        if (statusCode === 200) {
+          clearTimeout(processCloseTimeout);
+          resolve();
+        } else {
+          setTimeout(checkIfNginxRunning, backoff);
+          backoff = Math.min(backoff + 50, 250);
+        }
+      }).end();
     }
     checkIfNginxRunning();
   });
