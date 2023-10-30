@@ -1,7 +1,6 @@
 import { spawn } from "node:child_process";
 import { dirname, resolve } from "node:path";
-import { request } from 'http'
-
+import { request } from "node:http";
 import { fileURLToPath } from "node:url";
 
 // Is there an official way to get the path to another packages binary?
@@ -14,7 +13,7 @@ const binPath = resolve(
 );
 
 export default async () => {
-  const healthWaitTime = 5000
+  const healthWaitTime = 5000;
   let isClosed = false;
   const proc = spawn(binPath);
 
@@ -37,9 +36,9 @@ export default async () => {
 
     let backoff = 50;
     async function checkIfNginxRunning() {
-      request({
-        socketPath: './nginx.sock',
-        path: '/',
+      const req = request({
+        socketPath: "./nginx.sock",
+        path: "/",
       }, ({ statusCode }) => {
         if (statusCode === 200) {
           clearTimeout(processCloseTimeout);
@@ -48,7 +47,12 @@ export default async () => {
           setTimeout(checkIfNginxRunning, backoff);
           backoff = Math.min(backoff + 50, 250);
         }
-      }).end();
+      });
+      req.on("error", function (e) {
+        setTimeout(checkIfNginxRunning, backoff);
+        backoff = Math.min(backoff + 50, 250);
+      });
+      req.end();
     }
     checkIfNginxRunning();
   });
