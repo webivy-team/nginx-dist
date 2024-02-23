@@ -1,9 +1,9 @@
-https://github.com/nginx/nginx/archive/release-1.25.2/nginx-1.25.2.tar.gz 1227006 2895fc98287a7e5f12e15cd02b88d84d2e1c484ca9d229efb3f69152e488f6fc 1.25.2 nginx
-https://github.com/nginx/njs/archive/0.8.1/njs-0.8.1.tar.gz 729780 0450d9652d3cfe7dd9f802d6f790a3616e1612eef447195cd3daa5d43b395881 0.8.1 njs
+https://github.com/nginx/nginx/archive/release-1.25.4/nginx-1.25.4.tar.gz 1230692 a4d685701fd1ba4a796184f7b6fb0c93ea7e7b237a04adbb517676cd81993680 1.25.4 nginx
+https://github.com/nginx/njs/archive/0.8.3/njs-0.8.3.tar.gz 735235 5e1341ee8c1dfce420ea6456475dafa7d5f4b9aed310faca32597cf4d221cfe0 0.8.3 njs
 https://github.com/openresty/echo-nginx-module/archive/v0.63/echo-nginx-module-0.63.tar.gz 53421 8af374d29592ef95baee53c91959c7b04927f11304c318a94f0ee140760515a4 0.63 echo-nginx-module
-https://github.com/openresty/headers-more-nginx-module/archive/v0.34/headers-more-nginx-module-0.34.tar.gz 28827 0c0d2ced2ce895b3f45eb2b230cd90508ab2a773299f153de14a43e44c1209b3 0.34 headers-more-nginx-module
-/usr/lib/gcc/aarch64-alpine-linux-musl/12.2.1/libgcc.a 347710 96bf24b9efb531e39735625672ef115625dfd880a4e8e938a19747d003808190 12.2.1_git20220924-r10 gcc
-/usr/lib/gcc/aarch64-alpine-linux-musl/12.2.1/libgcc_eh.a 277492 d7e1d04598174e6e4537f216c6210d9da2290410bde1965f93cfbe5e9e8869bc 12.2.1_git20220924-r10 gcc
-/usr/lib/libc.a 10736078 259706496f807d80f50c55262ff173adbb4faabfac5d61f834b6a09187944bee 1.2.4-r2 musl
-/usr/lib/libpcre2-8.a 699024 c69a97ef807fa26f70a81f059a4837beca7df3abb4e10e8aa2a2be26cfa60a5d 10.42-r1 pcre2
-/usr/lib/libssp_nonshared.a 3550 7769b1bf1de871aa26d4c8e6b28f76c03642e144e686a9bc945dae00e4ec6627 1.2.4-r2 musl
+https://github.com/openresty/headers-more-nginx-module/archive/v0.37/headers-more-nginx-module-0.37.tar.gz 29433 cf6e169d6b350c06d0c730b0eaf4973394026ad40094cddd3b3a5b346577019d 0.37 headers-more-nginx-module
+/usr/lib/gcc/aarch64-alpine-linux-musl/13.2.1/libgcc.a 3070050 98fd8af1ae61cc2eae1a07c7b255f3fef5d13f5871885b11c29c2410ec698f2f 13.2.1_git20231014-r0 gcc
+/usr/lib/gcc/aarch64-alpine-linux-musl/13.2.1/libgcc_eh.a 387796 b007c5e78b2a3507ce6f4bfe41815b20e74d943f336ccc019f34084863d0e2de 13.2.1_git20231014-r0 gcc
+/usr/lib/libc.a 11280908 b2b20254ad9092208522fc9adb092f7406c9d1bc7fca42c4cf7cdbb338024c88 1.2.4_git20230717-r4 musl
+/usr/lib/libpcre2-8.a 712376 c7436c3475fb84a551dca79c6b3bd1ac93f91c6322340625da4d89164ce30908 10.42-r2 pcre2
+/usr/lib/libssp_nonshared.a 3638 0668ab480f8b7974240804293abd0accabc93cf91bdaf976ce0df1bdc3a1dd9d 1.2.4_git20230717-r4 musl
