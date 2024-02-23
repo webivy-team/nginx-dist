@@ -1,7 +1,7 @@
 {
   "repository": "https://github.com/webivy-team/nginx-dist",
   "name": "nginx-dist",
-  "version": "v1.25.2-5",
+  "version": "v1.25.4-5",
   "type": "module",
   "main": "index.js",
   "license": "MIT",
