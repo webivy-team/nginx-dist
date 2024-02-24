@@ -12,5 +12,5 @@
     "x64"
   ],
   "bin": "nginx",
-  "version": "v1.25.2-5"
+  "version": "v1.25.4-7"
 }
