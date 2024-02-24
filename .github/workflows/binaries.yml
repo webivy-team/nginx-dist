@@ -75,6 +75,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: artifact/*
+          name: nginx-${{ matrix.ARCH }}-linux
 
   # TODO: Borked
   # nginx-x86_64-darwin:
@@ -115,6 +116,7 @@ jobs:
   #       uses: actions/upload-artifact@v4
   #       with:
   #         path: artifact/*
+  #         name: nginx-x86_64-darwin
 
   nginx-aarch64-darwin:
     name: nginx-aarch64-darwin
@@ -154,6 +156,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: artifact/*
+          name: nginx-aarch64-darwin
 
   upload:
     name: Upload binaries
@@ -177,22 +180,21 @@ jobs:
       - name: Download and unpack all workflow run artifacts
         uses: actions/download-artifact@v4
 
-      - name: List unpacked artifact files
-        run: ls -lah artifact/
+      - name: List working dir
+        run: ls -lah
 
       - name: Move binaries
         if: env.SKIP_SAME_SOURCES == 'true'
         working-directory: master
-
         run: |
-          mv ../artifact/nginx-*-x86_64-linux ./npm/linux-x64/nginx
-          mv ../artifact/nginx-*-x86_64-linux.sources ./npm/linux-x64/nginx.sources
-          mv ../artifact/nginx-*-aarch64-linux ./npm/linux-arm64/nginx
-          mv ../artifact/nginx-*-aarch64-linux.sources ./npm/linux-arm64/nginx.sources
-          # mv ../artifact/nginx-*-x86_64-darwin ./npm/darwin-x64/nginx
-          # mv ../artifact/nginx-*-x86_64-darwin.sources ./npm/darwin-x64/nginx.sources
-          mv ../artifact/nginx-*-arm64-darwin ./npm/darwin-arm64/nginx
-          mv ../artifact/nginx-*-arm64-darwin.sources ./npm/darwin-arm64/nginx.sources
+          mv ../nginx-x86_64-linux/nginx-*-x86_64-linux ./npm/linux-x64/nginx
+          mv ../nginx-x86_64-linux/nginx-*-x86_64-linux.sources ./npm/linux-x64/nginx.sources
+          mv ../nginx-aarch64-linux/nginx-*-aarch64-linux ./npm/linux-arm64/nginx
+          mv ../nginx-aarch64-linux/nginx-*-aarch64-linux.sources ./npm/linux-arm64/nginx.sources
+          # mv ../nginx-x86_64-darwin/nginx-*-x86_64-darwin ./npm/darwin-x64/nginx
+          # mv ../nginx-x86_64-darwin/nginx-*-x86_64-darwin.sources ./npm/darwin-x64/nginx.sources
+          mv ../nginx-aarch64-darwin/nginx-*-arm64-darwin ./npm/darwin-arm64/nginx
+          mv ../nginx-aarch64-darwin/nginx-*-arm64-darwin.sources ./npm/darwin-arm64/nginx.sources
           chmod +x ./npm/*/nginx
 
       - name: Check if there are any changes
@@ -216,7 +218,7 @@ jobs:
         if: steps.has_changes.outputs.result == 'yes'
         working-directory: master
         run: |
-          # XXX: workaround for https://github.com/orgs/community/discussions/55820
+          # TODO: workaround for https://github.com/orgs/community/discussions/55820
           git config --global http.version HTTP/1.1
           git pull -r
           git push https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git master
