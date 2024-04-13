@@ -12,7 +12,7 @@ const binPath = resolve(
   "nginx",
 );
 
-export default async () => {
+export default async ({socketPath = "./sockets/nginx.sock", healthCheckPath = "/.not-well-known/server-health"}) => {
   const healthWaitTime = 5000;
   let isClosed = false;
   const proc = spawn(binPath);
@@ -37,8 +37,8 @@ export default async () => {
     let backoff = 50;
     async function checkIfNginxRunning() {
       const req = request({
-        socketPath: "./nginx.sock",
-        path: "/",
+        socketPath,
+        path: healthCheckPath,
       }, ({ statusCode }) => {
         if (statusCode === 200) {
           clearTimeout(processCloseTimeout);
