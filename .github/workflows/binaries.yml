@@ -12,7 +12,7 @@ permissions: write-all
 
 env:
   NGINX_VERSION: "1.25.4" # https://nginx.org/
-  NGINX_DIST_VERSION: 7
+  NGINX_DIST_VERSION: 8
   NJS_VERSION: "0.x.x" # https://nginx.org/
   LIBRESSL_VERSION: "3.8.2" # https://alpinelinux.org/releases/
   ALPINE_BRANCH: v3.19 # https://www.libressl.org/releases.html
