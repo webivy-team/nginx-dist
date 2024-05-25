@@ -12,7 +12,7 @@ const binPath = resolve(
   "nginx",
 );
 
-export default async ({socketPath = "./sockets/nginx.sock", healthCheckPath = "/.not-well-known/server-health"}) => {
+export default async ({socketPath = "./sockets/nginx.sock", healthCheckPath = "/.not-well-known/server-health"} = {}) => {
   const healthWaitTime = 5000;
   let isClosed = false;
   const proc = spawn(binPath);
